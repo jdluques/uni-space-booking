@@ -43,8 +43,8 @@ func main() {
 	organizationRepo := organization.NewOrganizationRepository(db)
 	spaceRepo := space.NewSpaceRepository(db)
 	userRepo := user.NewUserRepository(db)
-	userBooking := user_booking.NewUserBookingRepository(db)
-	userOrganization := user_organization.NewUserOrganizationRepository(db)
+	userBookingRepo := user_booking.NewUserBookingRepository(db)
+	userOrganizationRepo := user_organization.NewUserOrganizationRepository(db)
 
 	e := echo.New()
 
