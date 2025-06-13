@@ -1,4 +1,4 @@
-package associations
+package user_booking
 
 import "github.com/google/uuid"
 

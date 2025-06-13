@@ -2,13 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/jdluques/uni-space-booking/internal/db"
+	"github.com/jdluques/uni-space-booking/internal/associations/user_booking"
+	"github.com/jdluques/uni-space-booking/internal/associations/user_organization"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+
+	"github.com/jdluques/uni-space-booking/internal/booking"
+	"github.com/jdluques/uni-space-booking/internal/db"
+	"github.com/jdluques/uni-space-booking/internal/organization"
+	"github.com/jdluques/uni-space-booking/internal/space"
+	"github.com/jdluques/uni-space-booking/internal/user"
 )
 
 func main() {
@@ -31,6 +38,13 @@ func main() {
 		return
 	}
 	fmt.Println("Successfully connected to the database!")
+
+	bookingRepo := booking.NewBookingRepository(db)
+	organizationRepo := organization.NewOrganizationRepository(db)
+	spaceRepo := space.NewSpaceRepository(db)
+	userRepo := user.NewUserRepository(db)
+	userBooking := user_booking.NewUserBookingRepository(db)
+	userOrganization := user_organization.NewUserOrganizationRepository(db)
 
 	e := echo.New()
 

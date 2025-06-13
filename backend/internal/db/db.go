@@ -2,8 +2,9 @@ package db
 
 import (
 	"fmt"
+	"github.com/jdluques/uni-space-booking/internal/associations/user_booking"
+	"github.com/jdluques/uni-space-booking/internal/associations/user_organization"
 
-	"github.com/jdluques/uni-space-booking/internal/associations"
 	"github.com/jdluques/uni-space-booking/internal/booking"
 	"github.com/jdluques/uni-space-booking/internal/organization"
 	"github.com/jdluques/uni-space-booking/internal/space"
@@ -24,8 +25,8 @@ func Connect(dsn string) (*gorm.DB, error) {
 		&organization.Organization{},
 		&space.Space{},
 		&user.User{},
-		&associations.UserBooking{},
-		&associations.UserOrganization{},
+		&user_booking.UserBooking{},
+		&user_organization.UserOrganization{},
 	); err != nil {
 		return nil, fmt.Errorf("failed to migrate models: %w", err)
 	}

@@ -1,4 +1,4 @@
-package associations
+package user_organization
 
 import "github.com/google/uuid"
 
