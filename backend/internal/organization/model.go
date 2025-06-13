@@ -2,7 +2,6 @@ package organization
 
 import (
 	"github.com/google/uuid"
-	"github.com/jdluques/uni-space-booking/internal/user"
 	"time"
 )
 
