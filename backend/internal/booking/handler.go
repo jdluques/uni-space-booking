@@ -2,7 +2,7 @@ package booking
 
 import (
 	"fmt"
-	"github.com/google/uuid"
+	"github.com/jdluques/uni-space-booking/internal/utils"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -16,28 +16,35 @@ func NewBookingHandler(bookingService BookingService) *BookingHandler {
 }
 
 func (h *BookingHandler) GetReservedBookingsBySpace(c echo.Context) error {
-	var filter BookingFilter
-
-	spaceIDStr := c.Param("space")
-	if spaceIDStr == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "space_id is required")
-	}
-	spaceId, err := uuid.Parse(spaceIDStr)
+	spaceID, err := utils.ParseUUIDParam(c, "space-id")
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid space_id format")
+		return err
 	}
 
-	status := StatusReserved
-
-	filter = BookingFilter{Status: &status, SpaceID: &spaceId}
-
-	approvedBookingsBySpace, err := h.bookingService.GetBookingsByFilter(c.Request().Context(), filter)
+	approvedBookingsBySpace, err := h.bookingService.GetBookingsByFilter(c.Request().Context(), spaceID)
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusInternalServerError,
-			fmt.Sprintf("failed to fetch approved bookings of %s space", spaceIDStr),
+			fmt.Sprintf("failed to fetch approved bookings of space %s ", spaceID),
 		)
 	}
 
 	return c.JSON(http.StatusOK, approvedBookingsBySpace)
+}
+
+func (h *BookingHandler) GetBookingsByUser(c echo.Context) error {
+	userID, err := utils.ParseUUIDParam(c, "user-id")
+	if err != nil {
+		return err
+	}
+
+	bookingsByUser, err := h.bookingService.GetBookingsByFilter(c.Request().Context(), userID)
+	if err != nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			fmt.Sprintf("failed to fetch bookings of user %s", userID),
+		)
+	}
+
+	return c.JSON(http.StatusOK, bookingsByUser)
 }
