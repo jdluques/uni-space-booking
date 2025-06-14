@@ -5,6 +5,15 @@ import (
 	"time"
 )
 
+func isValidBookingStatus(status BookingStatus) bool {
+	switch status {
+	case StatusPendingReview, StatusReserved, StatusRejected, StatusCancelled:
+		return true
+	default:
+		return false
+	}
+}
+
 type BookingStatus string
 
 const (
@@ -25,4 +34,13 @@ type Booking struct {
 	Description    string        `gorm:"type:varchar(255);not null"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
+}
+
+type BookingFilter struct {
+	OrganizationID *uuid.UUID
+	SpaceID        *uuid.UUID
+	UserID         *uuid.UUID
+	Status         *BookingStatus
+	From           *time.Time
+	To             *time.Time
 }
