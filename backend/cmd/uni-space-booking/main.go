@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/jdluques/uni-space-booking/internal/middlewares"
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"net/http"
 	"os"
@@ -9,8 +11,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
-	// "github.com/jdluques/uni-space-booking/internal/associations/user_booking"
-	// "github.com/jdluques/uni-space-booking/internal/associations/user_organization"
+	"github.com/jdluques/uni-space-booking/internal/associations/user_organization"
+	"github.com/jdluques/uni-space-booking/internal/auth"
 	"github.com/jdluques/uni-space-booking/internal/booking"
 	"github.com/jdluques/uni-space-booking/internal/db"
 	// "github.com/jdluques/uni-space-booking/internal/organization"
@@ -54,13 +56,24 @@ func main() {
 	// spaceRepo := space.NewSpaceRepository(db)
 	// userRepo := user.NewUserRepository(db)
 	// userBookingRepo := user_booking.NewUserBookingRepository(db)
-	// userOrganizationRepo := user_organization.NewUserOrganizationRepository(db)
+	userOrganizationRepo := user_organization.NewUserOrganizationRepository(db)
 
 	bookingService := booking.NewBookingService(bookingRepo)
+	userOrganizationService := user_organization.NewUserOrganizationService(userOrganizationRepo)
 
 	bookingHandler := booking.NewBookingHandler(bookingService)
 
+	enforcer, err := auth.InitCasbin(userOrganizationService)
+	if err != nil {
+		log.Fatalf("Error initializing Casbin: %v", err)
+	}
+
 	e := echo.New()
+
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{}))
+	e.Use(middlewares.CasbinMiddleware(enforcer))
 
 	registerAllRoutes(e, bookingHandler)
 

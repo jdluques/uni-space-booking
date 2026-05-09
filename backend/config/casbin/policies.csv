@@ -1,0 +1,22 @@
+# Policies for Endpoints of Spaces
+p, Admin, /spaces/:space-id, (POST|DELETE|PATCH), r.sub.role == 'Admin'
+
+# Policies for Endpoints of Bookings
+p, Admin, /bookings/requested/:space-id, GET, r.sub.role == 'Admin'
+p, Admin, /bookings/user/:user-id, GET, r.sub.role == 'Admin' || r.sub.id == r.extra.user_id
+p, User, /bookings/own, GET, r.sub.id == r.extra.user_id
+p, Admin, /bookings/organization/:organization-id, GET, r.sub.role == 'Admin' || isOrgMember(r.sub.user_id, r.obj.organization_id)
+p, User, /bookings/:booking-id, PATCH, r.sub.id == r.extra.booking_user_id
+p, Admin, /bookings/weekly/:space-id, POST, r.sub.role == 'Admin' || r.sub.role == 'Teacher'
+p, Admin, /bookings/review/:booking-id, PATCH, r.sub.role == 'Admin' ###
+p, Admin, /bookings/pending, GET, r.sub.role == 'Admin'
+p, Admin, /bookings/review, GET, r.sub.role == 'Admin'
+p, Admin, /bookings/review/:booking-id, PATCH, r.sub.role == 'Admin'
+
+# Policies for Endpoints of Users
+p, Admin, /users, POST, r.sub.email.endsWith('@utec.edu.pe')
+p, Admin, /users/:user-id, (PATCH|DELETE|GET), r.sub.role == 'Admin' || r.sub.id == r.extra.user_id
+
+# Policies for Endpoints of Organizations
+p, Admin, /organizations(|/:organization-id), (POST|PATCH|DELETE), r.sub.role == 'Admin'
+p, Admin, /organizations/users/:organization-id, GET, r.sub.role == 'Admin' || isOrgMember(r.sub.user_id, r.obj.organization_id)
